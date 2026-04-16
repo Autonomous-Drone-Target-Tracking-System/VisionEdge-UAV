@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YOLOv8 Live Object Detection & Tracking</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <h1>[MISSION CONTROL] DRONE TRACKING SYSTEM</h1>
+        <p>OPERATOR GRADE INTERFACE v2.0 - ALPHA PHASE</p>
+      </header>
+
+      <!-- Control Panel -->
+      <div class="control-panel">
+        <div class="status-indicator">
+          <span id="status-dot" class="status-dot"></span>
+          <span id="status-text">Initializing...</span>
+        </div>
+
+        <div class="controls">
+          <button
+            id="start-btn"
+            class="btn btn-start"
+            onclick="startDetection()"
+          >
+            ▶️ Start Detection
+          </button>
+          <button id="stop-btn" class="btn btn-stop" onclick="stopDetection()">
+            ⏹️ Stop Detection
+          </button>
+          <button
+            id="refresh-btn"
+            class="btn btn-refresh"
+            onclick="refreshStatus()"
+          >
+            🔄 Refresh Status
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Stream -->
+      <div class="video-container">
+        <div class="video-wrapper">
+          <img
+            id="video-stream"
+            src="{{ url_for('video_feed') }}"
+            alt="Live Video Stream"
+          />
+        </div>
+        <div class="telemetry-sidebar">
+            <div class="telemetry-item">
+                <span class="label">SENSORS:</span>
+                <span class="value" id="sensor-status">ONLINE</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="label">ALTITUDE:</span>
+                <span class="value" id="alt-val">12.4m</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="label">VELOCITY:</span>
+                <span class="value" id="vel-val">0.0m/s</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="label">TARGET:</span>
+                <span class="value" id="target-count">0</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="label">COORD:</span>
+                <span class="value">40.7128N 74.0060W</span>
+            </div>
+        </div>
+      </div>
+
+      <!-- Information Panel -->
+      <div class="info-panel">
+        <div class="info-section">
+          <h3>[SOP-741] TRACKING PROTOCOL</h3>
+          <ul>
+            <li>PRIMARY LOCK: Operator confirmed target validation</li>
+            <li>LOST-REACQ: Predictive Kalman extrapolation active</li>
+            <li>DRONE-HOLD: Maintain 15% safety distance</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>[MIL-SPEC] HUD ELEMENTS</h3>
+          <ul>
+            <li>BOLD CORNERS: Active Primary Lock</li>
+            <li>DASHED VECTORS: Predicted trajectory (2.0s)</li>
+            <li>CROSSHAIR: Drone aimpoint / Optical center</li>
+          </ul>
+        </div>
+      </div>
+
+        <div class="info-section">
+          <h3>⚙️ Controls</h3>
+          <ul>
+            <li>
+              <strong>Start Detection:</strong> Initialize camera and begin
+              processing
+            </li>
+            <li>
+              <strong>Stop Detection:</strong> Stop processing and release
+              camera
+            </li>
+            <li><strong>Refresh Status:</strong> Update connection status</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>
+          Built with ❤️ using Flask, YOLOv8 (Ultralytics), OpenCV, and Deep SORT
+        </p>
+        <p>© 2024 - Real-time Object Detection & Tracking Application</p>
+      </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      // Check status periodically
+      setInterval(checkStatus, 2000);
+
+      // Initial status check
+      checkStatus();
+
+      function checkStatus() {
+        fetch('/status')
+          .then(response => response.json())
+          .then(data => {
+            updateStatusDisplay(data);
+            updateTelemetryDisplay(data);
+          })
+          .catch(error => {
+            console.error('Error checking status:', error);
+            updateStatusDisplay({
+              status: 'error',
+              webcam: false,
+              detector: false,
+            });
+          });
+      }
+
+      function updateStatusDisplay(data) {
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+
+        // Update status indicator
+        statusDot.className = 'status-dot';
+
+        if (data.status === 'running' && data.webcam && data.detector) {
+          statusDot.classList.add('status-running');
+          statusText.textContent = 'Running - Detection Active';
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
+        } else if (data.status === 'initializing') {
+          statusDot.classList.add('status-initializing');
+          statusText.textContent = 'Initializing...';
+          startBtn.disabled = true;
+          stopBtn.disabled = true;
+        } else {
+          statusDot.classList.add('status-stopped');
+          statusText.textContent = 'Stopped';
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+        }
+      }
+
+      function updateTelemetryDisplay(data) {
+        const altVal = document.getElementById('alt-val');
+        const velVal = document.getElementById('vel-val');
+        
+        if (data && data.connected) {
+          altVal.textContent = "12.4m";
+          velVal.textContent = "4.2m/s";
+          altVal.style.color = "#ffa500";
+          velVal.style.color = "#ffa500";
+        } else {
+          altVal.textContent = "[DISCONNECTED]";
+          velVal.textContent = "[DISCONNECTED]";
+          altVal.style.color = "#f44336";
+          velVal.style.color = "#f44336";
+        }
+      }
+
+      function startDetection() {
+        const startBtn = document.getElementById('start-btn');
+        startBtn.disabled = true;
+        startBtn.innerHTML = '⏳ Starting...';
+
+        fetch('/start')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showNotification('Detection started successfully!', 'success');
+            } else {
+              showNotification(
+                'Failed to start detection: ' + data.message,
+                'error'
+              );
+            }
+            checkStatus();
+          })
+          .catch(error => {
+            showNotification('Error starting detection: ' + error, 'error');
+            checkStatus();
+          })
+          .finally(() => {
+            startBtn.innerHTML = '▶️ Start Detection';
+          });
+      }
+
+      function stopDetection() {
+        const stopBtn = document.getElementById('stop-btn');
+        stopBtn.disabled = true;
+        stopBtn.innerHTML = '⏳ Stopping...';
+
+        fetch('/stop')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showNotification('Detection stopped successfully!', 'success');
+            } else {
+              showNotification(
+                'Failed to stop detection: ' + data.message,
+                'error'
+              );
+            }
+            checkStatus();
+          })
+          .catch(error => {
+            showNotification('Error stopping detection: ' + error, 'error');
+            checkStatus();
+          })
+          .finally(() => {
+            stopBtn.innerHTML = '⏹️ Stop Detection';
+          });
+      }
+
+      function refreshStatus() {
+        const refreshBtn = document.getElementById('refresh-btn');
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '🔄 Refreshing...';
+
+        checkStatus();
+
+        setTimeout(() => {
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = '🔄 Refresh Status';
+        }, 1000);
+      }
+
+      function showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+
+        // Add to page
+        document.body.appendChild(notification);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 3000);
+      }
+
+      // Handle video stream errors
+      document.getElementById('video-stream').onerror = function () {
+        console.log('Video stream error, retrying...');
+        setTimeout(() => {
+          this.src = this.src; // Refresh the image source
+        }, 1000);
+      };
+    </script>
+  </body>
+</html>

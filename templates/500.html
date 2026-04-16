@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Error - YOLOv8 Tracker</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>500 - Internal Server Error</h1>
+        <p>Something went wrong on our end.</p>
+      </div>
+
+      <div
+        class="info-section"
+        style="text-align: center; margin: 20px auto; max-width: 500px"
+      >
+        <p>
+          Our detection algorithms encountered an unexpected error. Please try
+          again later.
+        </p>
+        <br />
+        <a href="{{ url_for('index') }}" class="btn btn-start">🏠 Go Home</a>
+      </div>
+    </div>
+  </body>
+</html>
