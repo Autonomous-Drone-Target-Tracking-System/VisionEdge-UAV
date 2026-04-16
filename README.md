@@ -1,8 +1,8 @@
-# 🎯 YOLOv8 Live Object Detection & Tracking
+# YOLOv8 Live Object Detection & Tracking
 
 A real-time web application for object detection and tracking using YOLOv8 and Deep SORT algorithms. This application streams live webcam feed with detected objects, bounding boxes, confidence scores, and unique tracking IDs.
 
-## ✨ Features
+## Features
 
 - **Real-time Object Detection**: Uses YOLOv8 (You Only Look Once) for fast and accurate object detection
 - **Multi-Object Tracking**: Implements Deep SORT algorithm to track multiple objects with unique IDs
@@ -12,7 +12,7 @@ A real-time web application for object detection and tracking using YOLOv8 and D
 - **80+ Object Classes**: Supports all COCO dataset classes (person, car, bicycle, etc.)
 - **Performance Monitoring**: Real-time statistics display
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 yolo-v8-live-tracker/
@@ -28,7 +28,7 @@ yolo-v8-live-tracker/
     └── 500.html          # 500 error page
 ```
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -71,7 +71,7 @@ python app.py
 
 Navigate to: `http://localhost:5000`
 
-## 🎮 Usage
+## Usage
 
 1. **Start the Application**: Run `python app.py`
 2. **Open Browser**: Go to `http://localhost:5000`
@@ -81,11 +81,11 @@ Navigate to: `http://localhost:5000`
 
 ### Web Interface Controls
 
-- **▶️ Start Detection**: Initialize camera and begin object detection
-- **⏹️ Stop Detection**: Stop processing and release camera resources
-- **🔄 Refresh Status**: Update connection and system status
+- **Start Detection**: Initialize camera and begin object detection
+- **Stop Detection**: Stop processing and release camera resources
+- **Refresh Status**: Update connection and system status
 
-## 🔧 Configuration
+## Configuration
 
 ### Camera Settings
 
@@ -118,7 +118,7 @@ self.tracker = DeepSort(
 )
 ```
 
-## 📊 Supported Object Classes
+## Supported Object Classes
 
 The application can detect and track 80 different object classes from the COCO dataset:
 
@@ -131,7 +131,7 @@ The application can detect and track 80 different object classes from the COCO d
 - **Electronics**: tv, laptop, mouse, remote, keyboard, cell phone, microwave, oven, toaster, sink, refrigerator
 - **Other**: book, clock, vase, scissors, teddy bear, hair drier, toothbrush
 
-## 🎨 Visual Features
+## Visual Features
 
 ### Bounding Boxes
 
@@ -151,7 +151,7 @@ The application can detect and track 80 different object classes from the COCO d
 - **Active Tracks**: Number of confirmed tracking targets
 - **Real-time Updates**: Statistics update with each frame
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -193,14 +193,14 @@ The application can detect and track 80 different object classes from the COCO d
 
 3. **Camera Resolution**: Lower resolutions will process faster but may reduce detection accuracy.
 
-## 🔒 Security Notes
+## Security Notes
 
 - The application runs a web server accessible on your local network
 - By default, it binds to `0.0.0.0:5000` (all interfaces)
 - For production use, implement proper authentication and HTTPS
 - Consider firewall rules if running on a shared network
 
-## 📝 Technical Details
+## Technical Details
 
 ### Architecture
 
@@ -225,15 +225,15 @@ The application can detect and track 80 different object classes from the COCO d
 - **Memory Usage**: ~500MB-1GB depending on model size
 - **CPU Usage**: Moderate (can utilize GPU if available)
 
-## 🤝 Contributing
+## Contributing
 
 Feel free to submit issues, feature requests, or pull requests to improve this application.
 
-## 📄 License
+## License
 
 This project is for educational and research purposes. Please respect the licenses of the underlying libraries (YOLOv8, Deep SORT, etc.).
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Ultralytics**: For the excellent YOLOv8 implementation
 - **Deep SORT**: For the multi-object tracking algorithm
@@ -242,4 +242,4 @@ This project is for educational and research purposes. Please respect the licens
 
 ---
 
-**Happy Object Tracking! 🎯**
+**Happy Object Tracking!**
